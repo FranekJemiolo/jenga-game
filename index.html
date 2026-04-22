@@ -774,18 +774,10 @@ const config = {
   width: 800,
   height: 600,
   backgroundColor: "#1a1a2e",
-  scene: {
-    create: function() {
-      scene = new JengaScene();
-      scene.create();
-    },
-    update: function(time, delta) {
-      scene.update(time, delta);
-    }
-  }
+  scene: JengaScene
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
 </script>
 </body>
 </html>
