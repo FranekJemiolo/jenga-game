@@ -423,8 +423,8 @@ class JengaScene extends Phaser.Scene {
         }
       }
 
-      // Check if block has fallen (angle > 0.5 or fallen off tower)
-      if (Math.abs(b.body.angle) > 0.5 || b.body.position.y > 550) {
+      // Check if block has fallen to ground (y > 580, ground level)
+      if (b.body.position.y > 580) {
         // Only fail if this is NOT the selected block AND NOT removed
         if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
           this.gameOver = true;
