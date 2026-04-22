@@ -35,12 +35,22 @@
       border-radius: 4px;
     }
     button:hover { background: #555; }
+    #camera-controls {
+      margin-top: 10px;
+    }
+    #camera-controls button {
+      margin: 0 5px;
+    }
   </style>
 </head>
 <body>
 <div id="ui">
   <div id="turn">Player 1 Turn</div>
   <button onclick="restartGame()">Restart</button>
+  <div id="camera-controls">
+    <button onclick="flipCameraLeft()">← Rotate Left</button>
+    <button onclick="flipCameraRight()">Rotate Right →</button>
+  </div>
 </div>
 
 <script>
@@ -55,10 +65,7 @@ class JengaScene extends Phaser.Scene {
     this.engine.positionIterations = 10;
     this.engine.velocityIterations = 10;
 
-    // Calculate zoom based on screen size to keep tower visible
-    const baseHeight = 600;
-    const zoom = Math.min(this.scale.height / baseHeight, 1.5);
-    this.camera3d = { angle: 0.8, tilt: 0.4, zoom };
+    this.camera3d = { angle: 0.8, tilt: 0.4, zoom: 1 };
 
     this.blocks = [];
     this.ground = null;
@@ -67,21 +74,10 @@ class JengaScene extends Phaser.Scene {
     this.currentPlayer = 1;
     this.gameOver = false;
 
-    this.scale.on('resize', this.handleResize, this);
-
     this.createGround();
     this.createTower();
     this.setupInput();
-  }
-
-  handleResize(gameSize) {
-    // Clear existing bodies
-    Matter.World.clear(this.world);
-    this.blocks = [];
-
-    // Recreate with new dimensions
-    this.createGround();
-    this.createTower();
+    this.setupCameraControls();
   }
 
   update(time, delta) {
@@ -98,10 +94,7 @@ class JengaScene extends Phaser.Scene {
   // GROUND
   // =====================
   createGround() {
-    const width = this.scale.width;
-    const height = this.scale.height;
-    const centerY = this.scale.height / 2;
-    this.ground = Matter.Bodies.rectangle(width / 2, centerY + 200, width, 200, {
+    this.ground = Matter.Bodies.rectangle(400, 550, 800, 100, {
       isStatic: true,
       friction: 1.0,
       frictionStatic: 1.0
@@ -115,15 +108,12 @@ class JengaScene extends Phaser.Scene {
   createTower() {
     const levels = 4; // Reduced for stability
     const w = 150, h = 25, d = 30; // Bigger blocks
-    // Use fixed screen coordinates for visibility
-    const centerX = this.scale.width / 2;
-    const centerY = this.scale.height / 2;
 
     for (let i = 0; i < levels; i++) {
       const orientation = i % 2 === 0 ? "x" : "z";
 
       for (let j = -1; j <= 1; j++) {
-        let x = centerX;
+        let x = 400;
         let z = 0;
 
         if (orientation === "x") {
@@ -134,8 +124,8 @@ class JengaScene extends Phaser.Scene {
           x += j * d;
         }
 
-        // Position tower in center of screen
-        const y = centerY + 100 + i * h;
+        // Position tower on ground
+        const y = 500 - i * h;
 
         const body = Matter.Bodies.rectangle(x, y, w, h, {
           friction: 1.0,
@@ -156,8 +146,16 @@ class JengaScene extends Phaser.Scene {
   // PROJECTION
   // =====================
   project(x, y, z) {
-    // Direct projection - coordinates are already in screen space
-    return { x, y, depth: z };
+    const { angle, tilt, zoom } = this.camera3d;
+
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    const px = x * cos - z * sin;
+    const depth = x * sin + z * cos;
+    const py = y + depth * tilt;
+
+    return { x: px * zoom, y: py * zoom, depth };
   }
 
   syncBlocks() {
@@ -172,10 +170,6 @@ class JengaScene extends Phaser.Scene {
   // =====================
   renderBlocks() {
     this.graphics.clear();
-
-    // Debug: draw a test rectangle at center of screen
-    this.graphics.fillStyle(0xff0000, 1);
-    this.graphics.fillRect(this.scale.width/2 - 50, this.scale.height/2 - 50, 100, 100);
 
     // Draw ground
     if (this.ground) {
@@ -303,6 +297,19 @@ class JengaScene extends Phaser.Scene {
   }
 
   // =====================
+  // CAMERA CONTROLS
+  // =====================
+  setupCameraControls() {
+    // Camera flip buttons are handled via HTML onclick events
+    window.flipCameraLeft = () => {
+      this.camera3d.angle -= Math.PI / 4;
+    };
+    window.flipCameraRight = () => {
+      this.camera3d.angle += Math.PI / 4;
+    };
+  }
+
+  // =====================
   // GAME LOGIC
   // =====================
   endTurn() {
@@ -334,13 +341,9 @@ function restartGame() {
 
 const config = {
   type: Phaser.AUTO,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: 800,
+  height: 600,
   backgroundColor: "#222",
-  scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.CENTER_BOTH
-  },
   scene: {
     create: function() {
       scene = new JengaScene();
