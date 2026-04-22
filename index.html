@@ -53,6 +53,36 @@
     #camera-controls button {
       margin: 0 5px;
     }
+    #game-over-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    #game-over-modal.active {
+      display: flex;
+    }
+    #game-over-modal h2 {
+      color: white;
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    #game-over-modal p {
+      color: white;
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+    #game-over-modal button {
+      font-size: 24px;
+      padding: 16px 32px;
+    }
   </style>
 </head>
 <body>
@@ -65,6 +95,12 @@
     <button onclick="setViewLeft()">Left</button>
     <button onclick="setViewRight()">Right</button>
   </div>
+</div>
+
+<div id="game-over-modal">
+  <h2 id="winner-text">Player X Wins!</h2>
+  <p>Game Over</p>
+  <button onclick="restartGame()">Play Again</button>
 </div>
 
 <script>
@@ -466,8 +502,8 @@ class JengaScene extends Phaser.Scene {
         if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
           this.gameOver = true;
           const winner = this.currentPlayer === 1 ? 2 : 1;
-          document.getElementById("turn").innerText =
-            "💥 Player " + winner + " Wins!";
+          document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
+          document.getElementById("game-over-modal").classList.add("active");
         }
       }
 
@@ -481,8 +517,8 @@ class JengaScene extends Phaser.Scene {
           if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
             this.gameOver = true;
             const winner = this.currentPlayer === 1 ? 2 : 1;
-            document.getElementById("turn").innerText =
-              "💥 Player " + winner + " Wins!";
+            document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
+            document.getElementById("game-over-modal").classList.add("active");
           }
         }
       }
@@ -496,6 +532,7 @@ class JengaScene extends Phaser.Scene {
 let scene;
 
 function restartGame() {
+  document.getElementById("game-over-modal").classList.remove("active");
   location.reload();
 }
 
