@@ -1,0 +1,11 @@
+{
+  "name": "jenga-game",
+  "version": "1.0.0",
+  "description": "Physics-based Jenga game with Phaser 3 and Matter.js",
+  "scripts": {
+    "test:stability": "node test-stability.js"
+  },
+  "devDependencies": {
+    "matter-js": "^0.19.0"
+  }
+}

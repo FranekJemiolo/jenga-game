@@ -56,6 +56,7 @@ class JengaScene extends Phaser.Scene {
     this.currentPlayer = 1;
     this.gameOver = false;
 
+    this.createGround();
     this.createTower();
     this.setupInput();
   }
@@ -71,11 +72,23 @@ class JengaScene extends Phaser.Scene {
   }
 
   // =====================
+  // GROUND
+  // =====================
+  createGround() {
+    const ground = Matter.Bodies.rectangle(400, 580, 800, 40, {
+      isStatic: true,
+      friction: 0.8,
+      frictionStatic: 1.0
+    });
+    Matter.World.add(this.world, ground);
+  }
+
+  // =====================
   // TOWER
   // =====================
   createTower() {
-    const levels = 10;
-    const w = 80, h = 20, d = 20;
+    const levels = 6; // Reduced for stability
+    const w = 100, h = 15, d = 20;
 
     for (let i = 0; i < levels; i++) {
       const orientation = i % 2 === 0 ? "x" : "z";
@@ -84,17 +97,22 @@ class JengaScene extends Phaser.Scene {
         let x = 400;
         let z = 0;
 
-        if (orientation === "x") z = j * d;
-        else x += j * d;
+        if (orientation === "x") {
+          z = j * d;
+          // Offset X slightly to prevent 2D collision (physics only)
+          x += j * 0.5; // Tiny offset to prevent overlap
+        } else {
+          x += j * d;
+        }
 
-        const y = 500 - i * h;
+        const y = 560 - i * h;
 
         const body = Matter.Bodies.rectangle(x, y, w, h, {
-          friction: 0.65,
-          frictionStatic: 0.95,
-          frictionAir: 0.012,
-          density: 0.0025,
-          angle: (Math.random() - 0.5) * 0.02
+          friction: 1.0,
+          frictionStatic: 1.0,
+          frictionAir: 0.005,
+          density: 0.003,
+          angle: 0
         });
 
         Matter.World.add(this.world, body);
