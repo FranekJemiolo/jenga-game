@@ -75,7 +75,8 @@ class StabilityTest {
           z = 0;
         } else {
           // Z-orientation: blocks extend in z direction
-          x = 400;
+          // In 2D physics, offset slightly in x to prevent overlap
+          x = 400 + (j - 0.5) * 2; // Small offset to prevent overlap
           z = (j - 0.5) * w;
         }
 
