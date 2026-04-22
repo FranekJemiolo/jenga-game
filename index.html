@@ -109,6 +109,7 @@ class JengaScene extends Phaser.Scene {
 
     this.touchedBlock = null;
     this.dragStart = null;
+    this.selectedBlock = null; // Track which block player selected
 
     // Draw persistent background to ensure canvas is filled
     this.graphics.fillStyle(0x1a1a2e, 1);
@@ -371,6 +372,7 @@ class JengaScene extends Phaser.Scene {
       const block = this.pickBlock(pointer);
       if (block) {
         this.touchedBlock = block;
+        this.selectedBlock = block; // Track selected block
         this.dragStart = { x: pointer.x, y: pointer.y };
         this.dragConstraint = Matter.Constraint.create({
           bodyA: block.body,
@@ -394,6 +396,7 @@ class JengaScene extends Phaser.Scene {
         this.dragConstraint = null;
         this.touchedBlock = null;
         this.dragStart = null;
+        // Keep selectedBlock for game over check
 
         this.endTurn();
       }
@@ -405,17 +408,22 @@ class JengaScene extends Phaser.Scene {
   // =====================
   endTurn() {
     this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+    this.selectedBlock = null; // Reset selected block for next turn
     document.getElementById("turn").innerText =
       "Player " + this.currentPlayer + " Turn";
   }
 
   checkCollapse() {
     for (const b of this.blocks) {
-      if (Math.abs(b.body.angle) > 0.5) {
-        this.gameOver = true;
-        const winner = this.currentPlayer === 1 ? 2 : 1;
-        document.getElementById("turn").innerText =
-          "💥 Player " + winner + " Wins!";
+      // Check if block has fallen (angle > 0.5 or fallen off tower)
+      if (Math.abs(b.body.angle) > 0.5 || b.body.position.y > 550) {
+        // Only fail if this is NOT the selected block
+        if (this.selectedBlock && b !== this.selectedBlock) {
+          this.gameOver = true;
+          const winner = this.currentPlayer === 1 ? 2 : 1;
+          document.getElementById("turn").innerText =
+            "💥 Player " + winner + " Wins!";
+        }
       }
     }
   }
