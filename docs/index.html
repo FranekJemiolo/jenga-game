@@ -470,6 +470,18 @@ class JengaScene extends Phaser.Scene {
             "💥 Player " + winner + " Wins!";
         }
       }
+
+      // Check if block has gone off screen
+      if (b.body.position.x < 0 || b.body.position.x > 800 ||
+          b.body.position.y < 0 || b.body.position.y > 600) {
+        // Only fail if this is NOT the selected block AND NOT removed
+        if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
+          this.gameOver = true;
+          const winner = this.currentPlayer === 1 ? 2 : 1;
+          document.getElementById("turn").innerText =
+            "💥 Player " + winner + " Wins!";
+        }
+      }
     }
   }
 }
