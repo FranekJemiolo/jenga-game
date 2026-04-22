@@ -46,7 +46,7 @@ class JengaScene extends Phaser.Scene {
 
     this.engine.world.gravity.y = 1;
     this.engine.positionIterations = 10;
-    this.engine.velocityIterations = 8;
+    this.engine.velocityIterations = 10;
 
     this.camera3d = { angle: 0.8, tilt: 0.4, zoom: 1 };
 
@@ -77,7 +77,7 @@ class JengaScene extends Phaser.Scene {
   createGround() {
     const ground = Matter.Bodies.rectangle(400, 580, 800, 40, {
       isStatic: true,
-      friction: 0.8,
+      friction: 1.0,
       frictionStatic: 1.0
     });
     Matter.World.add(this.world, ground);

@@ -28,10 +28,11 @@ A physics-based Jenga game built with Phaser 3 and Matter.js, featuring pseudo-3
 
 ## 🎯 Game Mechanics
 
-- **Tower structure**: 10 levels, 3 blocks per level (30 total blocks)
+- **Tower structure**: 6 levels, 3 blocks per level (18 total blocks)
 - **Alternating orientation**: Blocks alternate between X and Z axis orientation
 - **Collapse detection**: Tower collapses when any block rotates beyond 0.5 radians
 - **Physics tuning**: Custom friction, density, and air resistance for realistic feel
+- **Stability**: Tower includes ground/floor and tuned physics parameters for initial stability
 
 ## 📐 Architecture
 
@@ -74,6 +75,16 @@ To run locally:
    # Then visit http://localhost:8000/docs/
    ```
 
+## 🧪 Testing
+
+Run the automated stability test:
+```bash
+npm install
+npm run test:stability
+```
+
+This test simulates the tower physics for 3 seconds and verifies it remains stable without collapsing.
+
 ## 🔄 Deployment
 
 This project uses GitHub Actions for automatic deployment to GitHub Pages:
@@ -105,6 +116,10 @@ This project uses GitHub Actions for automatic deployment to GitHub Pages:
 ## 🔮 Future Enhancements
 
 Potential improvements for future versions:
+- **Flat 2D view system** (see `CHALLENGES.md` for detailed plan)
+  - Front, side, top, and isometric views
+  - View switching with keyboard/UI controls
+  - Proper 2D physics for each view
 - Axis-constrained dragging (real Jenga rule)
 - Camera orbit controls
 - Center of mass stability visualization
@@ -112,6 +127,10 @@ Potential improvements for future versions:
 - Sound effects
 - Multiplayer online mode
 - Block textures and improved visuals
+
+## ⚠️ Known Limitations
+
+The current pseudo-3D system uses Matter.js 2D physics, which cannot properly simulate 3D stacking where blocks at different Z-depths don't collide. The current implementation uses a tiny X-offset workaround for X-orientation blocks to prevent 2D collision overlap. This provides basic stability but is not a true 3D solution. This will be properly solved by the flat 2D view redesign outlined in `CHALLENGES.md`.
 
 ## 📄 License
 

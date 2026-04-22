@@ -52,11 +52,7 @@ class StabilityTest {
     const ground = Matter.Bodies.rectangle(400, 580, 800, 40, {
       isStatic: true,
       friction: TEST_CONFIG.friction,
-      frictionStatic: TEST_CONFIG.frictionStatic,
-      collisionFilter: {
-        category: 0x0001,
-        mask: 0xFFFF // Collide with everything
-      }
+      frictionStatic: TEST_CONFIG.frictionStatic
     });
     Matter.World.add(this.world, ground);
   }
