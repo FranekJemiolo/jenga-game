@@ -95,8 +95,8 @@ class JengaScene extends Phaser.Scene {
     this.world = this.engine.world;
 
     this.engine.world.gravity.y = 1;
-    this.engine.positionIterations = 10;
-    this.engine.velocityIterations = 10;
+    this.engine.positionIterations = 20; // Increased for stability
+    this.engine.velocityIterations = 20; // Increased for stability
 
     this.viewMode = 'front'; // front, back, left, right
 
@@ -147,7 +147,7 @@ class JengaScene extends Phaser.Scene {
   // TOWER
   // =====================
   createTower() {
-    const levels = 8; // More levels for taller tower
+    const levels = 6; // Reduced for stability
     const w = 150, h = 25, d = 30; // All blocks same size
 
     for (let i = 0; i < levels; i++) {
@@ -155,14 +155,8 @@ class JengaScene extends Phaser.Scene {
         let x = 400;
         let z = 0;
 
-        // Rotate 90 degrees at each level by offsetting blocks differently
-        if (i % 2 === 0) {
-          // Even levels: blocks side by side with normal spacing
-          x = 400 + (j - 0.5) * w;
-        } else {
-          // Odd levels: blocks closer together to simulate 90-degree rotation
-          x = 400 + (j - 0.5) * (w * 0.6);
-        }
+        // All blocks same spacing for maximum stability
+        x = 400 + (j - 0.5) * w;
 
         // Position tower on ground
         const y = 500 - i * h;
@@ -171,7 +165,7 @@ class JengaScene extends Phaser.Scene {
           friction: 1.0,
           frictionStatic: 1.0,
           frictionAir: 0.005,
-          density: 0.004,
+          density: 0.005, // Increased density for stability
           angle: 0
         });
 
