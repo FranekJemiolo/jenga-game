@@ -28,11 +28,11 @@ A physics-based Jenga game built with Phaser 3 and Matter.js, featuring pseudo-3
 
 ## 🎯 Game Mechanics
 
-- **Tower structure**: 6 levels, 3 blocks per level (18 total blocks)
+- **Tower structure**: 4 levels, 3 blocks per level (12 total blocks)
 - **Alternating orientation**: Blocks alternate between X and Z axis orientation
 - **Collapse detection**: Tower collapses when any block rotates beyond 0.5 radians
 - **Physics tuning**: Custom friction, density, and air resistance for realistic feel
-- **Stability**: Tower includes ground/floor and tuned physics parameters for initial stability
+- **Stability**: Tower includes ground/floor and tuned physics parameters for guaranteed initial stability (tested for 10 seconds)
 
 ## 📐 Architecture
 
