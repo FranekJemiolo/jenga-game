@@ -301,12 +301,17 @@ class JengaScene extends Phaser.Scene {
   }
 
   drawBlock(b) {
-    const corners = this.getCorners(b);
-    const p = corners.map(c => this.project(c.x, c.y, c.z));
+    const pos = b.screen;
+    const { w, h } = b;
+    const color = (Math.abs(b.z) < 5) ? 0xdeb887 :
+                 (Math.abs(b.z) < 15) ? 0xc49a6c : 0xa67c52;
 
-    this.drawQuad(p[4], p[5], p[6], p[7], 0xdeb887); // top
-    this.drawQuad(p[5], p[1], p[2], p[6], 0xc49a6c); // side
-    this.drawQuad(p[4], p[0], p[1], p[5], 0xa67c52); // front
+    this.graphics.fillStyle(color, 1);
+    this.graphics.fillRect(pos.x - w/2, pos.y - h/2, w, h);
+
+    // Draw edge/border
+    this.graphics.lineStyle(2, 0x3d2817, 1);
+    this.graphics.strokeRect(pos.x - w/2, pos.y - h/2, w, h);
   }
 
   drawQuad(a, b, c, d, color) {
@@ -345,8 +350,11 @@ class JengaScene extends Phaser.Scene {
     );
 
     for (const b of sorted) {
-      const p = this.getCorners(b).map(c=>this.project(c.x,c.y,c.z));
-      if (this.pointInQuad(pointer.x, pointer.y, p[4],p[5],p[6],p[7])) {
+      const pos = b.screen;
+      const { w, h } = b;
+      // Simple rectangle bounds check for 2D
+      if (pointer.x >= pos.x - w/2 && pointer.x <= pos.x + w/2 &&
+          pointer.y >= pos.y - h/2 && pointer.y <= pos.y + h/2) {
         return b;
       }
     }
