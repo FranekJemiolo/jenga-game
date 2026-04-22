@@ -556,11 +556,13 @@ class JengaScene extends Phaser.Scene {
       // Check if block has fallen to ground (y > 580, ground level)
       if (b.body.position.y > 580) {
         // Only fail if this is NOT the selected block AND NOT removed
-        if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
-          this.gameOver = true;
-          const winner = this.currentPlayer === 1 ? 2 : 1;
-          document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
-          document.getElementById("game-over-modal").classList.add("active");
+        if (!this.selectedBlock || b !== this.selectedBlock) {
+          if (!this.removedBlocks.includes(b)) {
+            this.gameOver = true;
+            const winner = this.currentPlayer === 1 ? 2 : 1;
+            document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
+            document.getElementById("game-over-modal").classList.add("active");
+          }
         }
       }
 
@@ -571,11 +573,13 @@ class JengaScene extends Phaser.Scene {
         const velocity = Math.sqrt(b.body.velocity.x ** 2 + b.body.velocity.y ** 2);
         if (velocity > 0.1) {
           // Only fail if this is NOT the selected block AND NOT removed
-          if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
-            this.gameOver = true;
-            const winner = this.currentPlayer === 1 ? 2 : 1;
-            document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
-            document.getElementById("game-over-modal").classList.add("active");
+          if (!this.selectedBlock || b !== this.selectedBlock) {
+            if (!this.removedBlocks.includes(b)) {
+              this.gameOver = true;
+              const winner = this.currentPlayer === 1 ? 2 : 1;
+              document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
+              document.getElementById("game-over-modal").classList.add("active");
+            }
           }
         }
       }
