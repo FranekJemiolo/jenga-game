@@ -213,11 +213,6 @@ class JengaScene extends Phaser.Scene {
     this.removedBlocks = []; // Track blocks that have been successfully removed
     this.initialYPositions = new Map(); // Track initial y positions for fall detection
 
-    // Draw persistent background to ensure canvas is filled
-    this.graphics.fillStyle(0x1a1a2e, 1);
-    this.graphics.fillRect(0, 0, 800, 750);
-    this.graphics.setDepth(-1000); // Ensure background is behind everything
-
     this.createGround();
     this.createBoundaries();
     this.createTower();
@@ -430,6 +425,10 @@ class JengaScene extends Phaser.Scene {
   // =====================
   renderBlocks() {
     this.graphics.clear();
+
+    // Draw background
+    this.graphics.fillStyle(0x1a1a2e, 1);
+    this.graphics.fillRect(0, 0, 800, 750);
 
     // Draw ground
     if (this.ground) {
