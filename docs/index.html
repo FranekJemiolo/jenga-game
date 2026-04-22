@@ -60,8 +60,10 @@
   <div id="turn">Player 1 Turn</div>
   <button onclick="restartGame()">Restart</button>
   <div id="camera-controls">
-    <button onclick="flipCameraLeft()">← Rotate Left</button>
-    <button onclick="flipCameraRight()">Rotate Right →</button>
+    <button onclick="setViewFront()">Front</button>
+    <button onclick="setViewBack()">Back</button>
+    <button onclick="setViewLeft()">Left</button>
+    <button onclick="setViewRight()">Right</button>
   </div>
 </div>
 
@@ -73,12 +75,18 @@ class JengaScene extends Phaser.Scene {
   // CAMERA CONTROLS
   // =====================
   setupCameraControls() {
-    // Camera flip buttons are handled via HTML onclick events
-    window.flipCameraLeft = () => {
-      this.camera3d.angle -= Math.PI / 4;
+    // Camera view buttons are handled via HTML onclick events
+    window.setViewFront = () => {
+      this.viewMode = 'front';
     };
-    window.flipCameraRight = () => {
-      this.camera3d.angle += Math.PI / 4;
+    window.setViewBack = () => {
+      this.viewMode = 'back';
+    };
+    window.setViewLeft = () => {
+      this.viewMode = 'left';
+    };
+    window.setViewRight = () => {
+      this.viewMode = 'right';
     };
   }
 
@@ -90,7 +98,7 @@ class JengaScene extends Phaser.Scene {
     this.engine.positionIterations = 10;
     this.engine.velocityIterations = 10;
 
-    this.camera3d = { angle: 0.8, tilt: 0.4, zoom: 1 };
+    this.viewMode = 'front'; // front, back, left, right
 
     this.blocks = [];
     this.ground = null;
@@ -176,24 +184,26 @@ class JengaScene extends Phaser.Scene {
   // PROJECTION
   // =====================
   project(x, y, z) {
-    const { angle, tilt, zoom } = this.camera3d;
-
-    // Translate to origin before rotation - use canvas center
+    // Simple 2D projection based on view mode
     const centerX = 400;
     const centerY = 300;
 
-    const x0 = x - centerX;
-    const y0 = y - centerY;
-
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-
-    const px = x0 * cos - z * sin;
-    const depth = x0 * sin + z * cos;
-    const py = y0 + depth * tilt;
-
-    // Translate back after rotation
-    return { x: px * zoom + centerX, y: py * zoom + centerY, depth };
+    switch (this.viewMode) {
+      case 'front':
+        // Front view: x and y as-is, z for depth sorting
+        return { x: x + centerX - 400, y: y + centerY - 300, depth: z };
+      case 'back':
+        // Back view: flip x, y as-is, z for depth sorting
+        return { x: -x + centerX, y: y + centerY - 300, depth: -z };
+      case 'left':
+        // Left view: z becomes x, y as-is, x for depth sorting
+        return { x: -z + centerX, y: y + centerY - 300, depth: x };
+      case 'right':
+        // Right view: z becomes x, y as-is, x for depth sorting
+        return { x: z + centerX, y: y + centerY - 300, depth: -x };
+      default:
+        return { x: x + centerX - 400, y: y + centerY - 300, depth: z };
+    }
   }
 
   syncBlocks() {
