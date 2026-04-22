@@ -146,6 +146,7 @@ class JengaScene extends Phaser.Scene {
     this.dragStart = null;
     this.selectedBlock = null; // Track which block player selected
     this.removedBlocks = []; // Track blocks that have been successfully removed
+    this.initialYPositions = new Map(); // Track initial y positions for fall detection
 
     // Draw persistent background to ensure canvas is filled
     this.graphics.fillStyle(0x1a1a2e, 1);
@@ -504,6 +505,12 @@ class JengaScene extends Phaser.Scene {
         this.touchedBlock = block;
         this.selectedBlock = block; // Track selected block
         this.dragStart = { x: pointer.x, y: pointer.y };
+
+        // Record initial y positions for all blocks when a block is selected
+        for (const b of this.blocks) {
+          this.initialYPositions.set(b, b.body.position.y);
+        }
+
         this.dragConstraint = Matter.Constraint.create({
           bodyA: block.body,
           pointB: { x: pointer.x, y: pointer.y },
@@ -540,6 +547,7 @@ class JengaScene extends Phaser.Scene {
   endTurn() {
     this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
     this.selectedBlock = null; // Reset selected block for next turn
+    this.initialYPositions.clear(); // Reset initial y positions for next turn
     document.getElementById("turn").innerText =
       "Player " + this.currentPlayer + " Turn";
   }
@@ -553,25 +561,11 @@ class JengaScene extends Phaser.Scene {
         }
       }
 
-      // Check if block has fallen to ground (y > 580, ground level)
-      if (b.body.position.y > 580) {
-        // Only fail if this is NOT the selected block AND NOT removed
-        if (!this.selectedBlock || b !== this.selectedBlock) {
-          if (!this.removedBlocks.includes(b)) {
-            this.gameOver = true;
-            const winner = this.currentPlayer === 1 ? 2 : 1;
-            document.getElementById("winner-text").innerText = "💥 Player " + winner + " Wins!";
-            document.getElementById("game-over-modal").classList.add("active");
-          }
-        }
-      }
-
-      // Check if block has gone off screen
-      if (b.body.position.x < 0 || b.body.position.x > 800 ||
-          b.body.position.y < 0 || b.body.position.y > 600) {
-        // Check if block is still moving
-        const velocity = Math.sqrt(b.body.velocity.x ** 2 + b.body.velocity.y ** 2);
-        if (velocity > 0.1) {
+      // Check if block has fallen more than 2x its height (50px)
+      const initialY = this.initialYPositions.get(b);
+      if (initialY !== undefined) {
+        const fallDistance = b.body.position.y - initialY;
+        if (fallDistance > 50) { // 2x block height (25 * 2 = 50)
           // Only fail if this is NOT the selected block AND NOT removed
           if (!this.selectedBlock || b !== this.selectedBlock) {
             if (!this.removedBlocks.includes(b)) {
