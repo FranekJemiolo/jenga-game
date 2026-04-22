@@ -56,9 +56,21 @@ class JengaScene extends Phaser.Scene {
     this.currentPlayer = 1;
     this.gameOver = false;
 
+    this.scale.on('resize', this.handleResize, this);
+
     this.createGround();
     this.createTower();
     this.setupInput();
+  }
+
+  handleResize(gameSize) {
+    // Clear existing bodies
+    Matter.World.clear(this.world);
+    this.blocks = [];
+
+    // Recreate with new dimensions
+    this.createGround();
+    this.createTower();
   }
 
   update(time, delta) {
@@ -75,7 +87,9 @@ class JengaScene extends Phaser.Scene {
   // GROUND
   // =====================
   createGround() {
-    const ground = Matter.Bodies.rectangle(400, 580, 800, 40, {
+    const width = this.scale.width;
+    const height = this.scale.height;
+    const ground = Matter.Bodies.rectangle(width / 2, height - 20, width, 40, {
       isStatic: true,
       friction: 1.0,
       frictionStatic: 1.0
@@ -89,12 +103,14 @@ class JengaScene extends Phaser.Scene {
   createTower() {
     const levels = 6; // Reduced for stability
     const w = 100, h = 15, d = 20;
+    const centerX = this.scale.width / 2;
+    const groundY = this.scale.height - 20;
 
     for (let i = 0; i < levels; i++) {
       const orientation = i % 2 === 0 ? "x" : "z";
 
       for (let j = -1; j <= 1; j++) {
-        let x = 400;
+        let x = centerX;
         let z = 0;
 
         if (orientation === "x") {
@@ -105,7 +121,7 @@ class JengaScene extends Phaser.Scene {
           x += j * d;
         }
 
-        const y = 560 - i * h;
+        const y = groundY - 40 - i * h;
 
         const body = Matter.Bodies.rectangle(x, y, w, h, {
           friction: 1.0,
@@ -298,9 +314,13 @@ function restartGame() {
 
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: window.innerWidth,
+  height: window.innerHeight,
   backgroundColor: "#222",
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
   scene: {
     create: function() {
       scene = new JengaScene();
