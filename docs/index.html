@@ -17,6 +17,7 @@
       width: 800px;
       height: 600px;
       margin: 0 auto;
+      background: #1a1a2e;
     }
     canvas {
       background: #1a1a2e;
@@ -208,10 +209,6 @@ class JengaScene extends Phaser.Scene {
   renderBlocks() {
     this.graphics.clear();
 
-    // Draw background to ensure full canvas is filled
-    this.graphics.fillStyle(0x1a1a2e, 1);
-    this.graphics.fillRect(0, 0, 800, 600);
-
     // Draw ground
     if (this.ground) {
       const pos = this.ground.position;
@@ -376,6 +373,7 @@ const config = {
   height: 600,
   backgroundColor: "#1a1a2e",
   parent: "game-container",
+  transparent: false,
   scene: {
     create: function() {
       scene = new JengaScene();
