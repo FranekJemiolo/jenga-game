@@ -153,10 +153,15 @@ class JengaScene extends Phaser.Scene {
   // GROUND
   // =====================
   createGround() {
+    const CATEGORY_GROUND = 0x0004;
     this.ground = Matter.Bodies.rectangle(400, 550, 1000, 100, {
       isStatic: true,
       friction: 1.0,
-      frictionStatic: 1.0
+      frictionStatic: 1.0,
+      collisionFilter: {
+        category: CATEGORY_GROUND,
+        mask: 0xFFFF // Collide with everything
+      }
     });
     Matter.World.add(this.world, this.ground);
   }
@@ -168,8 +173,15 @@ class JengaScene extends Phaser.Scene {
     const levels = 6; // Reduced for stability
     const w = 150, h = 25, d = 30; // All blocks same size
 
+    // Collision categories
+    const CATEGORY_X = 0x0001; // X-orientation blocks
+    const CATEGORY_Z = 0x0002; // Z-orientation blocks
+    const CATEGORY_GROUND = 0x0004; // Ground
+
     for (let i = 0; i < levels; i++) {
       const orientation = i % 2 === 0 ? "x" : "z";
+      const category = orientation === "x" ? CATEGORY_X : CATEGORY_Z;
+      const mask = CATEGORY_GROUND | (orientation === "x" ? CATEGORY_Z : CATEGORY_X);
 
       for (let j = 0; j < 2; j++) {
         let x = 400;
@@ -195,7 +207,11 @@ class JengaScene extends Phaser.Scene {
           frictionStatic: 1.0,
           frictionAir: 0.002, // Reduced for faster falling
           density: 0.006, // Increased density for stability
-          angle: 0
+          angle: 0,
+          collisionFilter: {
+            category: category,
+            mask: mask
+          }
         });
 
         Matter.World.add(this.world, body);

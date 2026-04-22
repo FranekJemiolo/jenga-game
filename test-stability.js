@@ -49,10 +49,18 @@ class StabilityTest {
   }
 
   createGround() {
-    const ground = Matter.Bodies.rectangle(400, 580, 800, 40, {
+    const { blockWidth: w, blockHeight: h } = TEST_CONFIG;
+    const groundY = 580;
+    const CATEGORY_GROUND = 0x0004;
+
+    const ground = Matter.Bodies.rectangle(400, groundY, 1000, 100, {
       isStatic: true,
       friction: TEST_CONFIG.friction,
-      frictionStatic: TEST_CONFIG.frictionStatic
+      frictionStatic: TEST_CONFIG.frictionStatic,
+      collisionFilter: {
+        category: CATEGORY_GROUND,
+        mask: 0xFFFF // Collide with everything
+      }
     });
     Matter.World.add(this.world, ground);
   }
@@ -61,8 +69,15 @@ class StabilityTest {
     const { levels, blockWidth: w, blockHeight: h, blockDepth: d } = TEST_CONFIG;
     const groundY = 580;
 
+    // Collision categories
+    const CATEGORY_X = 0x0001; // X-orientation blocks
+    const CATEGORY_Z = 0x0002; // Z-orientation blocks
+    const CATEGORY_GROUND = 0x0004; // Ground
+
     for (let i = 0; i < levels; i++) {
       const orientation = i % 2 === 0 ? "x" : "z";
+      const category = orientation === "x" ? CATEGORY_X : CATEGORY_Z;
+      const mask = CATEGORY_GROUND | (orientation === "x" ? CATEGORY_Z : CATEGORY_X);
 
       for (let j = 0; j < 2; j++) {
         let x = 400;
@@ -87,7 +102,11 @@ class StabilityTest {
           frictionStatic: TEST_CONFIG.frictionStatic,
           frictionAir: TEST_CONFIG.frictionAir,
           density: TEST_CONFIG.density,
-          angle: 0
+          angle: 0,
+          collisionFilter: {
+            category: category,
+            mask: mask
+          }
         });
 
         Matter.World.add(this.world, body);
