@@ -57,6 +57,19 @@
 class JengaScene extends Phaser.Scene {
   constructor() { super("Jenga"); }
 
+  // =====================
+  // CAMERA CONTROLS
+  // =====================
+  setupCameraControls() {
+    // Camera flip buttons are handled via HTML onclick events
+    window.flipCameraLeft = () => {
+      this.camera3d.angle -= Math.PI / 4;
+    };
+    window.flipCameraRight = () => {
+      this.camera3d.angle += Math.PI / 4;
+    };
+  }
+
   create() {
     this.engine = Matter.Engine.create();
     this.world = this.engine.world;
@@ -242,6 +255,9 @@ class JengaScene extends Phaser.Scene {
   }
 
   pickBlock(pointer) {
+    // Ensure blocks have screen property before picking
+    this.syncBlocks();
+
     const sorted = [...this.blocks].sort(
       (a,b)=>b.screen.depth - a.screen.depth
     );
@@ -294,19 +310,6 @@ class JengaScene extends Phaser.Scene {
         this.endTurn();
       }
     });
-  }
-
-  // =====================
-  // CAMERA CONTROLS
-  // =====================
-  setupCameraControls() {
-    // Camera flip buttons are handled via HTML onclick events
-    window.flipCameraLeft = () => {
-      this.camera3d.angle -= Math.PI / 4;
-    };
-    window.flipCameraRight = () => {
-      this.camera3d.angle += Math.PI / 4;
-    };
   }
 
   // =====================
