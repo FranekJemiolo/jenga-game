@@ -6,7 +6,19 @@
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
   <style>
-    body { margin: 0; background: #222; overflow: hidden; }
+    body {
+      margin: 0;
+      background: #222;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #game-container {
+      margin: 50px;
+      position: relative;
+    }
     #ui {
       position: absolute;
       top: 20px;
@@ -44,12 +56,14 @@
   </style>
 </head>
 <body>
-<div id="ui">
-  <div id="turn">Player 1 Turn</div>
-  <button onclick="restartGame()">Restart</button>
-  <div id="camera-controls">
-    <button onclick="flipCameraLeft()">← Rotate Left</button>
-    <button onclick="flipCameraRight()">Rotate Right →</button>
+<div id="game-container">
+  <div id="ui">
+    <div id="turn">Player 1 Turn</div>
+    <button onclick="restartGame()">Restart</button>
+    <div id="camera-controls">
+      <button onclick="flipCameraLeft()">← Rotate Left</button>
+      <button onclick="flipCameraRight()">Rotate Right →</button>
+    </div>
   </div>
 </div>
 
@@ -347,6 +361,7 @@ const config = {
   width: 800,
   height: 600,
   backgroundColor: "#222",
+  parent: "game-container",
   scene: {
     create: function() {
       scene = new JengaScene();
