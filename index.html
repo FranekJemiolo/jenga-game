@@ -110,6 +110,7 @@ class JengaScene extends Phaser.Scene {
     this.touchedBlock = null;
     this.dragStart = null;
     this.selectedBlock = null; // Track which block player selected
+    this.removedBlocks = []; // Track blocks that have been successfully removed
 
     // Draw persistent background to ensure canvas is filled
     this.graphics.fillStyle(0x1a1a2e, 1);
@@ -415,10 +416,17 @@ class JengaScene extends Phaser.Scene {
 
   checkCollapse() {
     for (const b of this.blocks) {
+      // Check if block has been successfully removed (moved far from tower)
+      if (Math.abs(b.body.position.x - 400) > 200) {
+        if (!this.removedBlocks.includes(b)) {
+          this.removedBlocks.push(b);
+        }
+      }
+
       // Check if block has fallen (angle > 0.5 or fallen off tower)
       if (Math.abs(b.body.angle) > 0.5 || b.body.position.y > 550) {
-        // Only fail if this is NOT the selected block
-        if (this.selectedBlock && b !== this.selectedBlock) {
+        // Only fail if this is NOT the selected block AND NOT removed
+        if (this.selectedBlock && b !== this.selectedBlock && !this.removedBlocks.includes(b)) {
           this.gameOver = true;
           const winner = this.currentPlayer === 1 ? 2 : 1;
           document.getElementById("turn").innerText =
