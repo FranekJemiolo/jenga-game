@@ -11,7 +11,7 @@ const Matter = require('matter-js');
 
 // Test configuration
 const TEST_CONFIG = {
-  levels: 4, // Further reduced for stability
+  levels: 8, // Increased for taller tower
   blockWidth: 150, // Even wider blocks for stability
   blockHeight: 25, // Taller blocks for visibility
   blockDepth: 30, // Deeper blocks
