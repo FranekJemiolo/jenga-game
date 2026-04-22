@@ -174,14 +174,22 @@ class JengaScene extends Phaser.Scene {
   project(x, y, z) {
     const { angle, tilt, zoom } = this.camera3d;
 
+    // Translate to origin before rotation
+    const centerX = 400;
+    const centerY = 500;
+
+    const x0 = x - centerX;
+    const y0 = y - centerY;
+
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
 
-    const px = x * cos - z * sin;
-    const depth = x * sin + z * cos;
-    const py = y + depth * tilt;
+    const px = x0 * cos - z * sin;
+    const depth = x0 * sin + z * cos;
+    const py = y0 + depth * tilt;
 
-    return { x: px * zoom, y: py * zoom, depth };
+    // Translate back after rotation
+    return { x: px * zoom + centerX, y: py * zoom + centerY, depth };
   }
 
   syncBlocks() {
