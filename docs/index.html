@@ -153,6 +153,7 @@ class JengaScene extends Phaser.Scene {
     this.graphics.setDepth(-1000); // Ensure background is behind everything
 
     this.createGround();
+    this.createBoundaries();
     this.createTower();
     this.setupInput();
     this.setupCameraControls();
@@ -198,6 +199,49 @@ class JengaScene extends Phaser.Scene {
       }
     });
     Matter.World.add(this.world, this.ground);
+  }
+
+  // =====================
+  // BOUNDARIES
+  // =====================
+  createBoundaries() {
+    const CATEGORY_GROUND = 0x0004;
+    const boundaryThickness = 50;
+
+    // Left boundary
+    const leftWall = Matter.Bodies.rectangle(-boundaryThickness/2, 300, boundaryThickness, 600, {
+      isStatic: true,
+      friction: 1.0,
+      frictionStatic: 1.0,
+      collisionFilter: {
+        category: CATEGORY_GROUND,
+        mask: 0xFFFF
+      }
+    });
+
+    // Right boundary
+    const rightWall = Matter.Bodies.rectangle(800 + boundaryThickness/2, 300, boundaryThickness, 600, {
+      isStatic: true,
+      friction: 1.0,
+      frictionStatic: 1.0,
+      collisionFilter: {
+        category: CATEGORY_GROUND,
+        mask: 0xFFFF
+      }
+    });
+
+    // Top boundary
+    const topWall = Matter.Bodies.rectangle(400, -boundaryThickness/2, 800, boundaryThickness, {
+      isStatic: true,
+      friction: 1.0,
+      frictionStatic: 1.0,
+      collisionFilter: {
+        category: CATEGORY_GROUND,
+        mask: 0xFFFF
+      }
+    });
+
+    Matter.World.add(this.world, [leftWall, rightWall, topWall]);
   }
 
   // =====================
