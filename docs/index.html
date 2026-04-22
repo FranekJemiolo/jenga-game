@@ -178,9 +178,9 @@ class JengaScene extends Phaser.Scene {
   project(x, y, z) {
     const { angle, tilt, zoom } = this.camera3d;
 
-    // Translate to origin before rotation
+    // Translate to origin before rotation - use canvas center
     const centerX = 400;
-    const centerY = 500;
+    const centerY = 300;
 
     const x0 = x - centerX;
     const y0 = y - centerY;
