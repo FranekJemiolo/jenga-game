@@ -120,7 +120,7 @@ class JengaScene extends Phaser.Scene {
   // GROUND
   // =====================
   createGround() {
-    this.ground = Matter.Bodies.rectangle(400, 550, 800, 100, {
+    this.ground = Matter.Bodies.rectangle(400, 550, 1000, 100, {
       isStatic: true,
       friction: 1.0,
       frictionStatic: 1.0
@@ -204,6 +204,10 @@ class JengaScene extends Phaser.Scene {
   // =====================
   renderBlocks() {
     this.graphics.clear();
+
+    // Draw background to ensure full canvas is filled
+    this.graphics.fillStyle(0x1a1a2e, 1);
+    this.graphics.fillRect(0, 0, 800, 600);
 
     // Draw ground
     if (this.ground) {
