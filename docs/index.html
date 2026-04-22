@@ -110,16 +110,16 @@ class JengaScene extends Phaser.Scene {
   // =====================
   setupCameraControls() {
     // Camera view buttons are handled via HTML onclick events
-    const views = ['front', 'right', 'back', 'left'];
+    const views = ['front', 'front-right', 'right', 'right-back', 'back', 'back-left', 'left', 'left-front'];
     let currentIndex = 0;
 
     window.rotateViewLeft = () => {
-      currentIndex = (currentIndex - 1 + 4) % 4;
+      currentIndex = (currentIndex - 1 + 8) % 8;
       this.viewMode = views[currentIndex];
     };
 
     window.rotateViewRight = () => {
-      currentIndex = (currentIndex + 1) % 4;
+      currentIndex = (currentIndex + 1) % 8;
       this.viewMode = views[currentIndex];
     };
   }
@@ -267,15 +267,27 @@ class JengaScene extends Phaser.Scene {
       case 'front':
         // Front view: x and y as-is, z for depth sorting
         return { x: x, y: y, depth: z };
-      case 'back':
-        // Back view: flip x, y as-is, z for depth sorting
-        return { x: 800 - x, y: y, depth: -z };
-      case 'left':
-        // Left view: z becomes x, y as-is, x for depth sorting
-        return { x: 400 - z, y: y, depth: x - 400 };
+      case 'front-right':
+        // Front-right view: diagonal between front and right
+        return { x: (x + 400 + z) / 2, y: y, depth: (z + 400 - x) / 2 };
       case 'right':
         // Right view: z becomes x, y as-is, x for depth sorting
         return { x: 400 + z, y: y, depth: 400 - x };
+      case 'right-back':
+        // Right-back view: diagonal between right and back
+        return { x: (400 + z + 800 - x) / 2, y: y, depth: (400 - x - z) / 2 };
+      case 'back':
+        // Back view: flip x, y as-is, z for depth sorting
+        return { x: 800 - x, y: y, depth: -z };
+      case 'back-left':
+        // Back-left view: diagonal between back and left
+        return { x: (800 - x + 400 - z) / 2, y: y, depth: (-z + x - 400) / 2 };
+      case 'left':
+        // Left view: z becomes x, y as-is, x for depth sorting
+        return { x: 400 - z, y: y, depth: x - 400 };
+      case 'left-front':
+        // Left-front view: diagonal between left and front
+        return { x: (400 - z + x) / 2, y: y, depth: (x - 400 + z) / 2 };
       default:
         return { x: x, y: y, depth: z };
     }
