@@ -59,23 +59,24 @@ class StabilityTest {
 
   createTower() {
     const { levels, blockWidth: w, blockHeight: h, blockDepth: d } = TEST_CONFIG;
+    const groundY = 580;
 
     for (let i = 0; i < levels; i++) {
       const orientation = i % 2 === 0 ? "x" : "z";
 
-      for (let j = -1; j <= 1; j++) {
+      for (let j = 0; j < 2; j++) {
         let x = 400;
         let z = 0;
 
         if (orientation === "x") {
-          z = j * d;
+          z = (j - 0.5) * d;
           // Offset X slightly to prevent 2D collision (physics only)
-          x += j * 0.5; // Tiny offset to prevent overlap
+          x += (j - 0.5) * 0.5;
         } else {
-          x += j * d;
+          x += (j - 0.5) * d;
         }
 
-        const y = 560 - i * h;
+        const y = groundY - 100 - i * h;
 
         const body = Matter.Bodies.rectangle(x, y, w, h, {
           friction: TEST_CONFIG.friction,
