@@ -62,12 +62,22 @@ class StabilityTest {
     const groundY = 580;
 
     for (let i = 0; i < levels; i++) {
+      const orientation = i % 2 === 0 ? "x" : "z";
+
       for (let j = 0; j < 2; j++) {
         let x = 400;
         let z = 0;
 
-        // All blocks same spacing for maximum stability
-        x = 400 + (j - 0.5) * w;
+        // 90-degree rotation at each level
+        if (orientation === "x") {
+          // X-orientation: blocks extend in x direction
+          x = 400 + (j - 0.5) * w;
+          z = 0;
+        } else {
+          // Z-orientation: blocks extend in z direction
+          x = 400;
+          z = (j - 0.5) * w;
+        }
 
         const y = groundY - 100 - i * h;
 
@@ -88,7 +98,7 @@ class StabilityTest {
           d,
           z,
           level: i,
-          orientation: "x"
+          orientation
         });
       }
     }

@@ -151,12 +151,22 @@ class JengaScene extends Phaser.Scene {
     const w = 150, h = 25, d = 30; // All blocks same size
 
     for (let i = 0; i < levels; i++) {
+      const orientation = i % 2 === 0 ? "x" : "z";
+
       for (let j = 0; j < 2; j++) {
         let x = 400;
         let z = 0;
 
-        // All blocks same spacing for maximum stability
-        x = 400 + (j - 0.5) * w;
+        // 90-degree rotation at each level
+        if (orientation === "x") {
+          // X-orientation: blocks extend in x direction
+          x = 400 + (j - 0.5) * w;
+          z = 0;
+        } else {
+          // Z-orientation: blocks extend in z direction
+          x = 400;
+          z = (j - 0.5) * w;
+        }
 
         // Position tower on ground
         const y = 500 - i * h;
@@ -180,25 +190,25 @@ class JengaScene extends Phaser.Scene {
   // PROJECTION
   // =====================
   project(x, y, z) {
-    // Simple 2D projection based on view mode
+    // Simple 2D projection based on view mode - keep tower centered
     const centerX = 400;
     const centerY = 300;
 
     switch (this.viewMode) {
       case 'front':
         // Front view: x and y as-is, z for depth sorting
-        return { x: x + centerX - 400, y: y + centerY - 300, depth: z };
+        return { x: x, y: y, depth: z };
       case 'back':
         // Back view: flip x, y as-is, z for depth sorting
-        return { x: -x + centerX, y: y + centerY - 300, depth: -z };
+        return { x: 800 - x, y: y, depth: -z };
       case 'left':
         // Left view: z becomes x, y as-is, x for depth sorting
-        return { x: -z + centerX, y: y + centerY - 300, depth: x };
+        return { x: 400 - z, y: y, depth: x - 400 };
       case 'right':
         // Right view: z becomes x, y as-is, x for depth sorting
-        return { x: z + centerX, y: y + centerY - 300, depth: -x };
+        return { x: 400 + z, y: y, depth: 400 - x };
       default:
-        return { x: x + centerX - 400, y: y + centerY - 300, depth: z };
+        return { x: x, y: y, depth: z };
     }
   }
 
