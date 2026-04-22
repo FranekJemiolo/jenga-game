@@ -12,9 +12,9 @@ const Matter = require('matter-js');
 // Test configuration
 const TEST_CONFIG = {
   levels: 4, // Further reduced for stability
-  blockWidth: 120, // Even wider blocks for stability
-  blockHeight: 15, // Shorter blocks for stability
-  blockDepth: 20,
+  blockWidth: 150, // Even wider blocks for stability
+  blockHeight: 25, // Taller blocks for visibility
+  blockDepth: 30, // Deeper blocks
   simulationDuration: 10000, // 10 seconds in milliseconds (increased for long-term stability)
   timeStep: 16.67, // ~60 FPS
   collapseAngleThreshold: 0.5, // radians

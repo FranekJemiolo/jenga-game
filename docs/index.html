@@ -113,7 +113,7 @@ class JengaScene extends Phaser.Scene {
   // =====================
   createTower() {
     const levels = 4; // Reduced for stability
-    const w = 120, h = 15, d = 20;
+    const w = 150, h = 25, d = 30; // Bigger blocks
     const centerX = this.scale.width / 2;
     const groundY = this.scale.height - 100;
 
@@ -164,7 +164,8 @@ class JengaScene extends Phaser.Scene {
     const depth = x * sin + z * cos;
     const py = y + depth * tilt;
 
-    return { x: px * zoom + centerX, y: py * zoom + centerY, depth };
+    // Y-axis is inverted (positive y is down), so subtract from centerY
+    return { x: px * zoom + centerX, y: centerY - py * zoom, depth };
   }
 
   syncBlocks() {
