@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>2D Jenga</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
+  <style>
+    body { margin: 0; background: #222; overflow: hidden; }
+    #ui {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      z-index: 10;
+    }
+    button { 
+      margin-top: 8px; 
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #444;
+      color: white;
+      border: 1px solid #666;
+      border-radius: 4px;
+    }
+    button:hover { background: #555; }
+  </style>
+</head>
+<body>
+<div id="ui">
+  <div id="turn">Player 1 Turn</div>
+  <button onclick="restartGame()">Restart</button>
+</div>
+
+<script>
+class JengaScene extends Phaser.Scene {
+  constructor() { super("Jenga"); }
+
+  create() {
+    this.engine = Matter.Engine.create();
+    this.world = this.engine.world;
+
+    this.engine.world.gravity.y = 1;
+    this.engine.positionIterations = 10;
+    this.engine.velocityIterations = 8;
+
+    this.camera3d = { angle: 0.8, tilt: 0.4, zoom: 1 };
+
+    this.blocks = [];
+    this.graphics = this.add.graphics();
+
+    this.currentPlayer = 1;
+    this.gameOver = false;
+
+    this.createTower();
+    this.setupInput();
+  }
+
+  update(time, delta) {
+    if (this.gameOver) return;
+
+    Matter.Engine.update(this.engine, delta);
+
+    this.syncBlocks();
+    this.renderBlocks();
+    this.checkCollapse();
+  }
+
+  // =====================
+  // TOWER
+  // =====================
+  createTower() {
+    const levels = 10;
+    const w = 80, h = 20, d = 20;
+
+    for (let i = 0; i < levels; i++) {
+      const orientation = i % 2 === 0 ? "x" : "z";
+
+      for (let j = -1; j <= 1; j++) {
+        let x = 400;
+        let z = 0;
+
+        if (orientation === "x") z = j * d;
+        else x += j * d;
+
+        const y = 500 - i * h;
+
+        const body = Matter.Bodies.rectangle(x, y, w, h, {
+          friction: 0.65,
+          frictionStatic: 0.95,
+          frictionAir: 0.012,
+          density: 0.0025,
+          angle: (Math.random() - 0.5) * 0.02
+        });
+
+        Matter.World.add(this.world, body);
+
+        this.blocks.push({ body, w, h, d, z });
+      }
+    }
+  }
+
+  // =====================
+  // PROJECTION
+  // =====================
+  project(x, y, z) {
+    const { angle, tilt, zoom } = this.camera3d;
+
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    const px = x * cos - z * sin;
+    const depth = x * sin + z * cos;
+    const py = y + depth * tilt;
+
+    return { x: px * zoom, y: py * zoom, depth };
+  }
+
+  syncBlocks() {
+    for (const b of this.blocks) {
+      const pos = b.body.position;
+      b.screen = this.project(pos.x, pos.y, b.z);
+    }
+  }
+
+  // =====================
+  // RENDER
+  // =====================
+  renderBlocks() {
+    this.graphics.clear();
+
+    this.blocks.sort((a, b) => a.screen.depth - b.screen.depth);
+
+    for (const b of this.blocks) {
+      this.drawBlock(b);
+    }
+  }
+
+  getCorners(b) {
+    const { body, w, h, d, z } = b;
+    const x = body.position.x;
+    const y = body.position.y;
+
+    return [
+      { x: x - w/2, y: y - h/2, z: z - d/2 },
+      { x: x + w/2, y: y - h/2, z: z - d/2 },
+      { x: x + w/2, y: y - h/2, z: z + d/2 },
+      { x: x - w/2, y: y - h/2, z: z + d/2 },
+      { x: x - w/2, y: y + h/2, z: z - d/2 },
+      { x: x + w/2, y: y + h/2, z: z - d/2 },
+      { x: x + w/2, y: y + h/2, z: z + d/2 },
+      { x: x - w/2, y: y + h/2, z: z + d/2 }
+    ];
+  }
+
+  drawBlock(b) {
+    const corners = this.getCorners(b);
+    const p = corners.map(c => this.project(c.x, c.y, c.z));
+
+    this.drawQuad(p[4], p[5], p[6], p[7], 0xdeb887); // top
+    this.drawQuad(p[5], p[1], p[2], p[6], 0xc49a6c); // side
+    this.drawQuad(p[4], p[0], p[1], p[5], 0xa67c52); // front
+  }
+
+  drawQuad(a, b, c, d, color) {
+    this.graphics.fillStyle(color, 1);
+    this.graphics.beginPath();
+    this.graphics.moveTo(a.x, a.y);
+    this.graphics.lineTo(b.x, b.y);
+    this.graphics.lineTo(c.x, c.y);
+    this.graphics.lineTo(d.x, d.y);
+    this.graphics.closePath();
+    this.graphics.fillPath();
+  }
+
+  // =====================
+  // PICKING
+  // =====================
+  pointInQuad(px, py, a, b, c, d) {
+    const area = (p1, p2, p3) =>
+      Math.abs((p1.x*(p2.y-p3.y)+p2.x*(p3.y-p1.y)+p3.x*(p1.y-p2.y))/2);
+
+    const A = area(a,b,c) + area(a,c,d);
+    const A1 = area({x:px,y:py},a,b);
+    const A2 = area({x:px,y:py},b,c);
+    const A3 = area({x:px,y:py},c,d);
+    const A4 = area({x:px,y:py},d,a);
+
+    return Math.abs(A - (A1+A2+A3+A4)) < 0.5;
+  }
+
+  pickBlock(pointer) {
+    const sorted = [...this.blocks].sort(
+      (a,b)=>b.screen.depth - a.screen.depth
+    );
+
+    for (const b of sorted) {
+      const p = this.getCorners(b).map(c=>this.project(c.x,c.y,c.z));
+      if (this.pointInQuad(pointer.x, pointer.y, p[4],p[5],p[6],p[7])) {
+        return b;
+      }
+    }
+    return null;
+  }
+
+  // =====================
+  // INPUT
+  // =====================
+  setupInput() {
+    this.input.on("pointerdown", (p) => {
+      if (this.gameOver) return;
+
+      const block = this.pickBlock(p);
+      if (!block) return;
+
+      const scale = 1 / this.camera3d.zoom;
+
+      this.dragConstraint = Matter.Constraint.create({
+        pointA: { x: p.x * scale, y: p.y * scale },
+        bodyB: block.body,
+        stiffness: 0.002,
+        damping: 0.1
+      });
+
+      Matter.World.add(this.world, this.dragConstraint);
+      this.draggedBlock = block;
+    });
+
+    this.input.on("pointermove", (p) => {
+      if (this.dragConstraint) {
+        const scale = 1 / this.camera3d.zoom;
+        this.dragConstraint.pointA.x = p.x * scale;
+        this.dragConstraint.pointA.y = p.y * scale;
+      }
+    });
+
+    this.input.on("pointerup", () => {
+      if (this.dragConstraint) {
+        Matter.World.remove(this.world, this.dragConstraint);
+        this.dragConstraint = null;
+
+        this.endTurn();
+      }
+    });
+  }
+
+  // =====================
+  // GAME LOGIC
+  // =====================
+  endTurn() {
+    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+    document.getElementById("turn").innerText =
+      "Player " + this.currentPlayer + " Turn";
+  }
+
+  checkCollapse() {
+    for (const b of this.blocks) {
+      if (Math.abs(b.body.angle) > 0.5) {
+        this.gameOver = true;
+        const winner = this.currentPlayer === 1 ? 2 : 1;
+        document.getElementById("turn").innerText =
+          "💥 Player " + winner + " Wins!";
+      }
+    }
+  }
+}
+
+// =====================
+// BOOT
+// =====================
+let scene;
+
+function restartGame() {
+  location.reload();
+}
+
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  backgroundColor: "#222",
+  scene: {
+    create: function() {
+      scene = new JengaScene();
+      this.scene.add("Jenga", scene, true);
+    }
+  }
+};
+
+new Phaser.Game(config);
+</script>
+</body>
+</html>
