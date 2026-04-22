@@ -561,11 +561,11 @@ class JengaScene extends Phaser.Scene {
         }
       }
 
-      // Check if block has fallen more than 2x its height (50px)
+      // Check if block has fallen more than 1/2 its height (12.5px)
       const initialY = this.initialYPositions.get(b);
       if (initialY !== undefined) {
         const fallDistance = b.body.position.y - initialY;
-        if (fallDistance > 50) { // 2x block height (25 * 2 = 50)
+        if (fallDistance > 12.5) { // 1/2 block height (25 / 2 = 12.5)
           // Only fail if this is NOT the selected block AND NOT removed
           if (!this.selectedBlock || b !== this.selectedBlock) {
             if (!this.removedBlocks.includes(b)) {
