@@ -147,6 +147,8 @@ class JengaScene extends Phaser.Scene {
   // =====================
   project(x, y, z) {
     const { angle, tilt, zoom } = this.camera3d;
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
 
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
@@ -155,7 +157,7 @@ class JengaScene extends Phaser.Scene {
     const depth = x * sin + z * cos;
     const py = y + depth * tilt;
 
-    return { x: px * zoom, y: py * zoom, depth };
+    return { x: px * zoom + centerX, y: py * zoom + centerY, depth };
   }
 
   syncBlocks() {
