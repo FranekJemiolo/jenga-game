@@ -156,11 +156,8 @@ class JengaScene extends Phaser.Scene {
   // PROJECTION
   // =====================
   project(x, y, z) {
-    // Simplified projection for debugging - just use raw coordinates
-    const centerX = this.scale.width / 2;
-    const centerY = this.scale.height / 2;
-
-    return { x: x + centerX, y: y + centerY, depth: z };
+    // Direct projection - coordinates are already in screen space
+    return { x, y, depth: z };
   }
 
   syncBlocks() {
@@ -175,6 +172,10 @@ class JengaScene extends Phaser.Scene {
   // =====================
   renderBlocks() {
     this.graphics.clear();
+
+    // Debug: draw a test rectangle at center of screen
+    this.graphics.fillStyle(0xff0000, 1);
+    this.graphics.fillRect(this.scale.width/2 - 50, this.scale.height/2 - 50, 100, 100);
 
     // Draw ground
     if (this.ground) {
