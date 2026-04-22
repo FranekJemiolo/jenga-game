@@ -11,7 +11,7 @@ const Matter = require('matter-js');
 
 // Test configuration
 const TEST_CONFIG = {
-  levels: 8, // Increased for taller tower
+  levels: 6, // Reduced for stability with 90-degree rotation
   blockWidth: 150, // Even wider blocks for stability
   blockHeight: 25, // Taller blocks for visibility
   blockDepth: 30, // Deeper blocks
@@ -62,22 +62,20 @@ class StabilityTest {
     const groundY = 580;
 
     for (let i = 0; i < levels; i++) {
-      const orientation = i % 2 === 0 ? "x" : "z";
+      // Rotate 90 degrees at each level by alternating width and height
+      const levelW = i % 2 === 0 ? w : h;
+      const levelH = i % 2 === 0 ? h : w;
 
       for (let j = 0; j < 2; j++) {
         let x = 400;
         let z = 0;
 
         // Position blocks side by side in 2D
-        if (orientation === "x") {
-          x = 400 + (j - 0.5) * w;
-        } else {
-          x = 400 + (j - 0.5) * w;
-        }
+        x = 400 + (j - 0.5) * levelW;
 
-        const y = groundY - 100 - i * h;
+        const y = groundY - 100 - i * levelH;
 
-        const body = Matter.Bodies.rectangle(x, y, w, h, {
+        const body = Matter.Bodies.rectangle(x, y, levelW, levelH, {
           friction: TEST_CONFIG.friction,
           frictionStatic: TEST_CONFIG.frictionStatic,
           frictionAir: TEST_CONFIG.frictionAir,
@@ -89,12 +87,12 @@ class StabilityTest {
 
         this.blocks.push({
           body,
-          w,
-          h,
+          w: levelW,
+          h: levelH,
           d,
           z,
           level: i,
-          orientation
+          orientation: i % 2 === 0 ? "x" : "z"
         });
       }
     }
