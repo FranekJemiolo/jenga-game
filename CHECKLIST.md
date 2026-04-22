@@ -47,7 +47,7 @@
 ## Post-Deployment Verification
 
 ### Core Functionality Testing
-- [ ] Game loads without refresh
+- [x] Game loads without refresh
 - [ ] Blocks can be selected reliably (no mis-click frustration)
 - [ ] Dragging feels elastic, not rigid
 - [ ] You can fully remove a block without glitches
@@ -91,15 +91,15 @@
 - [ ] UI resets correctly
 
 ### UX & Polish Testing
-- [ ] Current player clearly visible
-- [ ] Win message obvious
-- [ ] Restart always accessible
-- [ ] Cursor feedback (optional but recommended)
+- [x] Current player clearly visible
+- [x] Win message obvious
+- [x] Restart always accessible
+- [x] Cursor feedback (optional but recommended)
 
 ### Post-Deployment Verification
-- [ ] Game loads without refresh at live URL
+- [x] Game loads without refresh at live URL
 - [ ] Input works immediately
-- [ ] No missing assets
+- [x] No missing assets (CDN scripts loaded)
 - [ ] Open DevTools → no console errors
 - [ ] No warnings from Matter or Phaser
 - [ ] No lag spikes after multiple plays
