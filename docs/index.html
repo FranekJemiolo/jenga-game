@@ -211,8 +211,9 @@ class JengaScene extends Phaser.Scene {
     // Left boundary
     const leftWall = Matter.Bodies.rectangle(-boundaryThickness/2, 300, boundaryThickness, 600, {
       isStatic: true,
-      friction: 1.0,
-      frictionStatic: 1.0,
+      friction: 0.0, // No friction to repel cleanly
+      frictionStatic: 0.0,
+      restitution: 0.8, // High bounciness to repel blocks
       collisionFilter: {
         category: CATEGORY_GROUND,
         mask: 0xFFFF
@@ -222,8 +223,9 @@ class JengaScene extends Phaser.Scene {
     // Right boundary
     const rightWall = Matter.Bodies.rectangle(800 + boundaryThickness/2, 300, boundaryThickness, 600, {
       isStatic: true,
-      friction: 1.0,
-      frictionStatic: 1.0,
+      friction: 0.0, // No friction to repel cleanly
+      frictionStatic: 0.0,
+      restitution: 0.8, // High bounciness to repel blocks
       collisionFilter: {
         category: CATEGORY_GROUND,
         mask: 0xFFFF
@@ -233,8 +235,9 @@ class JengaScene extends Phaser.Scene {
     // Top boundary
     const topWall = Matter.Bodies.rectangle(400, -boundaryThickness/2, 800, boundaryThickness, {
       isStatic: true,
-      friction: 1.0,
-      frictionStatic: 1.0,
+      friction: 0.0, // No friction to repel cleanly
+      frictionStatic: 0.0,
+      restitution: 0.8, // High bounciness to repel blocks
       collisionFilter: {
         category: CATEGORY_GROUND,
         mask: 0xFFFF
