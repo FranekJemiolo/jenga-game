@@ -12,21 +12,14 @@
       background: #1a1a2e;
       overflow: auto;
     }
-    #game-container {
-      position: relative;
-      width: 800px;
-      height: 600px;
-      margin: 0 auto;
-      background: #1a1a2e;
-      overflow: hidden;
-    }
     canvas {
       background: #1a1a2e;
       display: block;
+      margin: 0 auto;
     }
     #ui {
       position: absolute;
-      top: 20px;
+      top: 70px;
       left: 50%;
       transform: translateX(-50%);
       color: white;
@@ -61,14 +54,12 @@
   </style>
 </head>
 <body>
-<div id="game-container">
-  <div id="ui">
-    <div id="turn">Player 1 Turn</div>
-    <button onclick="restartGame()">Restart</button>
-    <div id="camera-controls">
-      <button onclick="flipCameraLeft()">← Rotate Left</button>
-      <button onclick="flipCameraRight()">Rotate Right →</button>
-    </div>
+<div id="ui">
+  <div id="turn">Player 1 Turn</div>
+  <button onclick="restartGame()">Restart</button>
+  <div id="camera-controls">
+    <button onclick="flipCameraLeft()">← Rotate Left</button>
+    <button onclick="flipCameraRight()">Rotate Right →</button>
   </div>
 </div>
 
