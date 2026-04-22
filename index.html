@@ -106,6 +106,7 @@ class JengaScene extends Phaser.Scene {
 
     this.currentPlayer = 1;
     this.gameOver = false;
+    this.isStabilizing = false; // Track if waiting for tower to stabilize
 
     this.touchedBlock = null;
     this.dragStart = null;
@@ -131,6 +132,21 @@ class JengaScene extends Phaser.Scene {
     this.syncBlocks();
     this.renderBlocks();
     this.checkCollapse();
+
+    // Check if tower is stabilizing after a move
+    if (this.isStabilizing) {
+      let maxVelocity = 0;
+      for (const b of this.blocks) {
+        const v = Math.sqrt(b.body.velocity.x ** 2 + b.body.velocity.y ** 2);
+        maxVelocity = Math.max(maxVelocity, v);
+      }
+
+      // Tower is stable when all blocks have very low velocity
+      if (maxVelocity < 0.01) {
+        this.isStabilizing = false;
+        this.endTurn();
+      }
+    }
   }
 
   // =====================
@@ -166,7 +182,8 @@ class JengaScene extends Phaser.Scene {
           z = 0;
         } else {
           // Z-orientation: blocks extend in z direction
-          x = 400;
+          // In 2D physics, offset slightly in x to prevent overlap
+          x = 400 + (j - 0.5) * 2; // Small offset to prevent overlap
           z = (j - 0.5) * w;
         }
 
@@ -370,6 +387,9 @@ class JengaScene extends Phaser.Scene {
   // =====================
   setupInput() {
     this.input.on("pointerdown", (pointer) => {
+      // Only allow input if not stabilizing
+      if (this.isStabilizing) return;
+
       const block = this.pickBlock(pointer);
       if (block) {
         this.touchedBlock = block;
@@ -399,7 +419,8 @@ class JengaScene extends Phaser.Scene {
         this.dragStart = null;
         // Keep selectedBlock for game over check
 
-        this.endTurn();
+        // Start stabilization period
+        this.isStabilizing = true;
       }
     });
   }
