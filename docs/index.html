@@ -95,8 +95,8 @@ class JengaScene extends Phaser.Scene {
     this.world = this.engine.world;
 
     this.engine.world.gravity.y = 1;
-    this.engine.positionIterations = 20; // Increased for stability
-    this.engine.velocityIterations = 20; // Increased for stability
+    this.engine.positionIterations = 30; // Increased for stability
+    this.engine.velocityIterations = 30; // Increased for stability
 
     this.viewMode = 'front'; // front, back, left, right
 
@@ -176,8 +176,8 @@ class JengaScene extends Phaser.Scene {
         const body = Matter.Bodies.rectangle(x, y, w, h, {
           friction: 1.0,
           frictionStatic: 1.0,
-          frictionAir: 0.005,
-          density: 0.005, // Increased density for stability
+          frictionAir: 0.01, // Increased air resistance to reduce wobbliness
+          density: 0.006, // Increased density for stability
           angle: 0
         });
 

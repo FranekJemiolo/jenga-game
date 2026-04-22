@@ -23,10 +23,10 @@ const TEST_CONFIG = {
   // Physics parameters to test
   friction: 1.0,
   frictionStatic: 1.0,
-  frictionAir: 0.005,
-  density: 0.005, // Increased density for stability
-  positionIterations: 20, // Increased for stability
-  velocityIterations: 20 // Increased for stability
+  frictionAir: 0.01, // Increased air resistance to reduce wobbliness
+  density: 0.006, // Increased density for stability
+  positionIterations: 30, // Increased for stability
+  velocityIterations: 30 // Increased for stability
 };
 
 class StabilityTest {
