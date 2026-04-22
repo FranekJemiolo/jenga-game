@@ -107,6 +107,9 @@ class JengaScene extends Phaser.Scene {
     this.currentPlayer = 1;
     this.gameOver = false;
 
+    this.touchedBlock = null;
+    this.dragStart = null;
+
     // Draw persistent background to ensure canvas is filled
     this.graphics.fillStyle(0x1a1a2e, 1);
     this.graphics.fillRect(0, 0, 800, 600);
@@ -235,6 +238,49 @@ class JengaScene extends Phaser.Scene {
     for (const b of this.blocks) {
       this.drawBlock(b);
     }
+
+    // Highlight touched block
+    if (this.touchedBlock) {
+      const pos = this.touchedBlock.screen;
+      const { w, h } = this.touchedBlock;
+      this.graphics.lineStyle(4, 0xffff00, 1);
+      this.graphics.strokeRect(pos.x - w/2, pos.y - h/2, w, h);
+    }
+
+    // Draw drag direction arrow
+    if (this.touchedBlock && this.dragStart && this.input.activePointer) {
+      const blockPos = this.touchedBlock.screen;
+      const pointerX = this.input.activePointer.x;
+      const pointerY = this.input.activePointer.y;
+
+      const dx = pointerX - this.dragStart.x;
+      const dy = pointerY - this.dragStart.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance > 10) {
+        this.graphics.lineStyle(3, 0x00ff00, 1);
+        this.graphics.beginPath();
+        this.graphics.moveTo(blockPos.x, blockPos.y);
+        this.graphics.lineTo(pointerX, pointerY);
+        this.graphics.strokePath();
+
+        // Draw arrow head
+        const angle = Math.atan2(dy, dx);
+        const arrowSize = 10;
+        this.graphics.beginPath();
+        this.graphics.moveTo(pointerX, pointerY);
+        this.graphics.lineTo(
+          pointerX - arrowSize * Math.cos(angle - Math.PI / 6),
+          pointerY - arrowSize * Math.sin(angle - Math.PI / 6)
+        );
+        this.graphics.moveTo(pointerX, pointerY);
+        this.graphics.lineTo(
+          pointerX - arrowSize * Math.cos(angle + Math.PI / 6),
+          pointerY - arrowSize * Math.sin(angle + Math.PI / 6)
+        );
+        this.graphics.strokePath();
+      }
+    }
   }
 
   getCorners(b) {
@@ -311,30 +357,24 @@ class JengaScene extends Phaser.Scene {
   // INPUT
   // =====================
   setupInput() {
-    this.input.on("pointerdown", (p) => {
-      if (this.gameOver) return;
-
-      const block = this.pickBlock(p);
-      if (!block) return;
-
-      const scale = 1 / this.camera3d.zoom;
-
-      this.dragConstraint = Matter.Constraint.create({
-        pointA: { x: p.x * scale, y: p.y * scale },
-        bodyB: block.body,
-        stiffness: 0.002,
-        damping: 0.1
-      });
-
-      Matter.World.add(this.world, this.dragConstraint);
-      this.draggedBlock = block;
+    this.input.on("pointerdown", (pointer) => {
+      const block = this.pickBlock(pointer);
+      if (block) {
+        this.touchedBlock = block;
+        this.dragStart = { x: pointer.x, y: pointer.y };
+        this.dragConstraint = Matter.Constraint.create({
+          bodyA: block.body,
+          pointB: { x: pointer.x, y: pointer.y },
+          stiffness: 0.1,
+          damping: 0.1
+        });
+        Matter.World.add(this.world, this.dragConstraint);
+      }
     });
 
-    this.input.on("pointermove", (p) => {
+    this.input.on("pointermove", (pointer) => {
       if (this.dragConstraint) {
-        const scale = 1 / this.camera3d.zoom;
-        this.dragConstraint.pointA.x = p.x * scale;
-        this.dragConstraint.pointA.y = p.y * scale;
+        this.dragConstraint.pointB = { x: pointer.x, y: pointer.y };
       }
     });
 
@@ -342,6 +382,8 @@ class JengaScene extends Phaser.Scene {
       if (this.dragConstraint) {
         Matter.World.remove(this.world, this.dragConstraint);
         this.dragConstraint = null;
+        this.touchedBlock = null;
+        this.dragStart = null;
 
         this.endTurn();
       }
