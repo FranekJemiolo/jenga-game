@@ -11,11 +11,11 @@ const Matter = require('matter-js');
 
 // Test configuration
 const TEST_CONFIG = {
-  levels: 6, // Reduced for stability testing
-  blockWidth: 100, // Wider blocks for stability
+  levels: 4, // Further reduced for stability
+  blockWidth: 120, // Even wider blocks for stability
   blockHeight: 15, // Shorter blocks for stability
   blockDepth: 20,
-  simulationDuration: 3000, // 3 seconds in milliseconds (reduced for testing)
+  simulationDuration: 10000, // 10 seconds in milliseconds (increased for long-term stability)
   timeStep: 16.67, // ~60 FPS
   collapseAngleThreshold: 0.5, // radians
   maxVelocityThreshold: 0.1, // max velocity to consider "stable"
@@ -24,7 +24,7 @@ const TEST_CONFIG = {
   friction: 1.0,
   frictionStatic: 1.0,
   frictionAir: 0.005,
-  density: 0.003,
+  density: 0.004, // Increased density for stability
   positionIterations: 10,
   velocityIterations: 10
 };

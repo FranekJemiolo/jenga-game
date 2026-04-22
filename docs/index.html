@@ -9,7 +9,7 @@
     body { margin: 0; background: #222; overflow: hidden; }
     #ui {
       position: absolute;
-      top: 10px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       color: white;
@@ -17,10 +17,17 @@
       text-align: center;
       z-index: 10;
     }
-    button { 
-      margin-top: 8px; 
-      padding: 8px 16px;
-      font-size: 14px;
+    #turn {
+      font-size: 28px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      margin-bottom: 10px;
+    }
+    button {
+      margin-top: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
       background: #444;
       color: white;
@@ -105,8 +112,8 @@ class JengaScene extends Phaser.Scene {
   // TOWER
   // =====================
   createTower() {
-    const levels = 6; // Reduced for stability
-    const w = 100, h = 15, d = 20;
+    const levels = 4; // Reduced for stability
+    const w = 120, h = 15, d = 20;
     const centerX = this.scale.width / 2;
     const groundY = this.scale.height - 100;
 
@@ -131,7 +138,7 @@ class JengaScene extends Phaser.Scene {
           friction: 1.0,
           frictionStatic: 1.0,
           frictionAir: 0.005,
-          density: 0.003,
+          density: 0.004,
           angle: 0
         });
 
