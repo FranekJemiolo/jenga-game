@@ -40,10 +40,16 @@
       max-width: 60px;
     }
     #ui.collapsed #turn,
-    #ui.collapsed #camera-controls,
     #ui.collapsed #help-content,
     #ui.collapsed button:not(#toggle-menu) {
       display: none;
+    }
+    #help-content {
+      display: block;
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
     }
     #toggle-menu {
       background: #444;
@@ -76,24 +82,25 @@
     }
     button:hover { background: #555; }
     #camera-controls {
-      margin-top: 15px;
+      position: absolute;
+      top: auto;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 10px;
     }
     #camera-controls button {
-      margin: 5px 0;
-    }
-    #help-toggle {
-      margin-top: 15px;
-      background: #3a3a5a;
+      margin: 0;
+      width: auto;
     }
     #help-content {
-      display: none;
+      display: block;
       margin-top: 15px;
       font-size: 14px;
       line-height: 1.6;
       text-align: left;
-    }
-    #help-content.show {
-      display: block;
     }
     #help-content h3 {
       margin-top: 0;
@@ -144,21 +151,21 @@
   <button id="toggle-menu" onclick="toggleMenu()">☰</button>
   <div id="turn">Player 1 Turn</div>
   <button onclick="restartGame()">Restart</button>
-  <div id="camera-controls">
-    <button onclick="rotateViewLeft()">←</button>
-    <button onclick="rotateViewRight()">→</button>
-  </div>
-  <button id="help-toggle" onclick="toggleHelp()">?</button>
   <div id="help-content">
     <h3>How to Play</h3>
     <ul>
       <li>Click and drag blocks to remove them</li>
-      <li>Use arrow buttons to rotate the view</li>
+      <li>Use arrow buttons below the screen to rotate the view</li>
       <li>If a block falls more than 12.5px, you lose</li>
       <li>The selected block doesn't count as a failure</li>
       <li>Removed blocks don't count as failures</li>
     </ul>
   </div>
+</div>
+
+<div id="camera-controls">
+  <button onclick="rotateViewLeft()">←</button>
+  <button onclick="rotateViewRight()">→</button>
 </div>
 
 <div id="game-over-modal">
@@ -762,11 +769,6 @@ function restartGame() {
 function toggleMenu() {
   const ui = document.getElementById("ui");
   ui.classList.toggle("collapsed");
-}
-
-function toggleHelp() {
-  const helpContent = document.getElementById("help-content");
-  helpContent.classList.toggle("show");
 }
 
 const config = {
