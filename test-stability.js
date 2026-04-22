@@ -23,7 +23,7 @@ const TEST_CONFIG = {
   // Physics parameters to test
   friction: 1.0,
   frictionStatic: 1.0,
-  frictionAir: 0.01, // Increased air resistance to reduce wobbliness
+  frictionAir: 0.002, // Reduced for faster falling
   density: 0.006, // Increased density for stability
   positionIterations: 30, // Increased for stability
   velocityIterations: 30 // Increased for stability
@@ -33,7 +33,7 @@ class StabilityTest {
   constructor() {
     this.engine = Matter.Engine.create();
     this.world = this.engine.world;
-    this.engine.world.gravity.y = 1;
+    this.engine.world.gravity.y = 2; // Increased for faster falling
     this.engine.positionIterations = TEST_CONFIG.positionIterations;
     this.engine.velocityIterations = TEST_CONFIG.velocityIterations;
     this.blocks = [];
