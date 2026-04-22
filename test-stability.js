@@ -68,12 +68,11 @@ class StabilityTest {
         let x = 400;
         let z = 0;
 
+        // Position blocks side by side in 2D
         if (orientation === "x") {
-          z = (j - 0.5) * d;
-          // Offset X slightly to prevent 2D collision (physics only)
-          x += (j - 0.5) * 0.5;
+          x = 400 + (j - 0.5) * w;
         } else {
-          x += (j - 0.5) * d;
+          x = 400 + (j - 0.5) * w;
         }
 
         const y = groundY - 100 - i * h;
