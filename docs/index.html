@@ -147,20 +147,22 @@ class JengaScene extends Phaser.Scene {
   // TOWER
   // =====================
   createTower() {
-    const levels = 6; // Reduced for stability with 90-degree rotation
-    const baseW = 150, baseH = 25, d = 30; // Bigger blocks
+    const levels = 8; // More levels for taller tower
+    const w = 150, h = 25, d = 30; // All blocks same size
 
     for (let i = 0; i < levels; i++) {
-      // Rotate 90 degrees at each level by alternating width and height
-      const w = i % 2 === 0 ? baseW : baseH;
-      const h = i % 2 === 0 ? baseH : baseW;
-
       for (let j = 0; j < 2; j++) {
         let x = 400;
         let z = 0;
 
-        // Position blocks side by side in 2D
-        x = 400 + (j - 0.5) * w;
+        // Rotate 90 degrees at each level by offsetting blocks differently
+        if (i % 2 === 0) {
+          // Even levels: blocks side by side with normal spacing
+          x = 400 + (j - 0.5) * w;
+        } else {
+          // Odd levels: blocks closer together to simulate 90-degree rotation
+          x = 400 + (j - 0.5) * (w * 0.6);
+        }
 
         // Position tower on ground
         const y = 500 - i * h;
