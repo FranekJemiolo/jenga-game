@@ -94,7 +94,7 @@ class JengaScene extends Phaser.Scene {
     this.engine = Matter.Engine.create();
     this.world = this.engine.world;
 
-    this.engine.world.gravity.y = 1;
+    this.engine.world.gravity.y = 2; // Increased for faster falling
     this.engine.positionIterations = 30; // Increased for stability
     this.engine.velocityIterations = 30; // Increased for stability
 
@@ -193,7 +193,7 @@ class JengaScene extends Phaser.Scene {
         const body = Matter.Bodies.rectangle(x, y, w, h, {
           friction: 1.0,
           frictionStatic: 1.0,
-          frictionAir: 0.01, // Increased air resistance to reduce wobbliness
+          frictionAir: 0.002, // Reduced for faster falling
           density: 0.006, // Increased density for stability
           angle: 0
         });
