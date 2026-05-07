@@ -58,6 +58,92 @@ A physics-based Jenga game built with Phaser 3 and Matter.js, featuring pseudo-3
    - Front-to-back picking for correct selection
    - Screen-to-world coordinate conversion for dragging
 
+### Architecture Diagram
+
+```mermaid
+graph TD
+    A[Browser] --> B[Jenga Game]
+    
+    B --> C[Phaser 3 Game Engine]
+    B --> D[Matter.js Physics Engine]
+    B --> E[Game Logic]
+    
+    C --> F[Scene Manager]
+    C --> G[Renderer]
+    C --> H[Input System]
+    
+    D --> I[Physics World]
+    D --> J[Body System]
+    D --> K[Constraint System]
+    
+    E --> L[Tower Manager]
+    E --> M[Turn Manager]
+    E --> N[Game State]
+    
+    subgraph "Rendering Pipeline"
+        G --> O[Projection System]
+        G --> P[Depth Sorting]
+        G --> Q[Block Renderer]
+        
+        O --> R[Isometric Camera]
+        O --> S[3D to 2D Conversion]
+        P --> T[Z-Depth Calculation]
+        Q --> U[Quad Face Drawing]
+        Q --> V[3D Block Appearance]
+    end
+    
+    subgraph "Physics Components"
+        I --> W[Gravity Simulation]
+        I --> X[Block Collisions]
+        J --> Y[Block Bodies]
+        J --> Z[Ground Body]
+        K --> AA[Drag Constraints]
+        K --> BB[Elastic Connections]
+    end
+    
+    subgraph "Input Processing"
+        H --> CC[Mouse Input]
+        H --> DD[Touch Input]
+        CC --> EE[Block Selection]
+        DD --> FF[Touch Dragging]
+        EE --> GG[Point-in-Quad Test]
+        GG --> HH[Front-to-Back Picking]
+        FF --> II[Screen-to-World]
+    end
+    
+    subgraph "Game Systems"
+        L --> JJ[Tower Structure]
+        L --> KK[Block Creation]
+        L --> LL[Stability Check]
+        M --> MM[Player Turns]
+        M --> NN[Winner Detection]
+        N --> OO[Game State]
+        N --> PP[Restart System]
+    end
+    
+    subgraph "Tower Structure"
+        JJ --> QQ[4 Levels]
+        JJ --> RR[3 Blocks per Level]
+        JJ --> SS[12 Total Blocks]
+        JJ --> TT[Alternating Orientation]
+        TT --> UU[X-Axis Blocks]
+        TT --> VV[Z-Axis Blocks]
+    end
+    
+    subgraph "Game Rules"
+        LL --> WW[Collapse Detection]
+        LL --> XX[0.5 Radians Threshold]
+        MM --> YY[2-Player Local]
+        NN --> ZZ[Collapse Loser]
+    end
+    
+    subgraph "Testing System"
+        AAA[Stability Test] --> BBB[3 Second Simulation]
+        AAA --> CCC[Collapse Verification]
+        DDD[Test Runner] --> AAA
+    end
+```
+
 ## 🌐 Live Demo
 
 [https://franekjemiolo.github.io/jenga-game/](https://franekjemiolo.github.io/jenga-game/)
