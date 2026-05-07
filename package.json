@@ -1,7 +1,7 @@
 {
   "name": "jenga-game",
   "version": "1.0.0",
-  "description": "A Jenga game you can play in your browser. Uses physics to make the blocks fall realistically when you pull them out.",
+  "description": "A physics-based Jenga game you can play in your browser.",
   "scripts": {
     "test:stability": "node test-stability.js"
   },
