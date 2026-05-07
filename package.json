@@ -1,7 +1,7 @@
 {
   "name": "jenga-game",
   "version": "1.0.0",
-  "description": "Physics-based Jenga game with Phaser 3 and Matter.js",
+  "description": "A Jenga game you can play in your browser. Uses physics to make the blocks fall realistically when you pull them out.",
   "scripts": {
     "test:stability": "node test-stability.js"
   },
